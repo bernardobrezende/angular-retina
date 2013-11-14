@@ -1,4 +1,4 @@
-/*! angular-retina - v0.2.1 - 2013-11-14
+/*! angular-retina - v0.2.2 - 2013-11-14
 * https://github.com/jrief/angular-retina
 * Copyright (c) 2013 Jacob Rief; Licensed MIT */
 (function (angular, undefined) {
@@ -26,31 +26,41 @@
             return true;
           return $window.matchMedia && $window.matchMedia(mediaQuery).matches;
         }();
-      function getHighResolutionURL(url, suffix) {
+      function getHighResolutionURL(url, replaceValue, forValue) {
         var parts = url.split('.');
         if (parts.length < 2)
           return url;
-        parts[parts.length - 2] += suffix;
+        if (replaceValue && forValue) {
+          return url.replace(replaceValue, forValue);
+        } else {
+          parts[parts.length - 2] += '@2x';
+        }
         return parts.join('.');
       }
       return function (scope, element, attrs) {
-        var suffixAttr = element[0].hasAttribute('ng-retina-with') ? element[0].getAttribute('ng-retina-with') : '@2x';
+        if (element[0].hasAttribute('ng-retina-replace')) {
+          var replaceExpr = element[0].getAttribute('ng-retina-replace').split(' for ');
+          var replaceValue = replaceExpr[0].trim();
+          var forValue = replaceExpr[1].trim();
+        }
+        if (element[0].hasAttribute('ng-retina-config')) {
+          var configExpr = element[0].getAttribute('ng-retina-config').split(':');
+          var keepRetinaSize = configExpr[1].trim() === 'true';
+        }
         function setImgSrc(img_url) {
           attrs.$set('src', img_url);
+          if (!keepRetinaSize) {
+            attrs.$set('width', '50%');
+          }
           if (msie)
             element.prop('src', img_url);
         }
         function set2xVariant(img_url) {
           var img_url_2x = $window.sessionStorage.getItem(img_url);
           if (!img_url_2x) {
-            img_url_2x = getHighResolutionURL(img_url, suffixAttr);
-            $http.head(img_url_2x).success(function (data, status) {
-              setImgSrc(img_url_2x);
-              $window.sessionStorage.setItem(img_url, img_url_2x);
-            }).error(function (data, status, headers, config) {
-              setImgSrc(img_url);
-              $window.sessionStorage.setItem(img_url, img_url);
-            });
+            img_url_2x = getHighResolutionURL(img_url, replaceValue, forValue);
+            setImgSrc(img_url_2x);
+            $window.sessionStorage.setItem(img_url, img_url_2x);
           } else {
             setImgSrc(img_url_2x);
           }
