@@ -1,4 +1,4 @@
-/*! angular-retina - v0.2.2 - 2013-11-14
+/*! angular-retina - v0.2.3 - 2013-11-14
 * https://github.com/jrief/angular-retina
 * Copyright (c) 2013 Jacob Rief; Licensed MIT */
 (function (angular, undefined) {
@@ -38,18 +38,24 @@
         return parts.join('.');
       }
       return function (scope, element, attrs) {
+        var replaceValue, forValue;
         if (element[0].hasAttribute('ng-retina-replace')) {
           var replaceExpr = element[0].getAttribute('ng-retina-replace').split(' for ');
-          var replaceValue = replaceExpr[0].trim();
-          var forValue = replaceExpr[1].trim();
+          replaceValue = replaceExpr[0].trim();
+          forValue = replaceExpr[1].trim();
+        } else {
+          replaceValue = forValue = attrs.ngSrc;
         }
+        var keepImageSize;
         if (element[0].hasAttribute('ng-retina-config')) {
           var configExpr = element[0].getAttribute('ng-retina-config').split(':');
-          var keepRetinaSize = configExpr[1].trim() === 'true';
+          keepImageSize = configExpr[1].trim() === 'true';
+        } else {
+          keepImageSize = true;
         }
         function setImgSrc(img_url) {
           attrs.$set('src', img_url);
-          if (!keepRetinaSize) {
+          if (keepImageSize) {
             attrs.$set('width', '50%');
           }
           if (msie)

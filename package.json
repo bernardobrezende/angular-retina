@@ -1,7 +1,7 @@
 {
   "name": "angular-retina",
   "description": "Replace AngularJS directive 'ng-src' by a version which supports Retina displays. This is a fork to allow retina suffix image targeting, like 'imageHD.png' or 'image@ret.png' instead of the standard 'image@2x.png'. Please, first reffer to the original source-code before reading using this source.",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "homepage": "https://github.com/jrief/angular-retina",
   "author": {
     "name": "Jacob Rief",
