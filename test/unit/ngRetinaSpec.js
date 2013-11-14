@@ -44,6 +44,15 @@ describe('test module angular-retina', function() {
         $httpBackend.flush();
         expect(element.attr('src')).toBe('/image@2x.png');
       }));
+
+      it('should set src tag with a highres image with custom ng-retina-with', inject(function($compile) {
+        var element = angular.element('<input ng-src="/image.png" ng-retina-with="HD">');
+        $httpBackend.when('HEAD', '/imageHD.png').respond(200);
+        $compile(element)(scope);
+        scope.$digest();
+        $httpBackend.flush();
+        expect(element.attr('src')).toBe('/imageHD.png');
+      }));
     });
 
     describe('for marked up "ng-src" tags', function() {
@@ -79,6 +88,43 @@ describe('test module angular-retina', function() {
           scope.$digest();
           expect(element.attr('src')).toBe('/image@2x.png');
         });
+      });
+    });
+
+    describe('for marked up "ng-src" and "ng-retina-with" tags', function() {
+      var element;
+
+      beforeEach(inject(function($compile) {
+        element = angular.element('<input ng-src="/{{image_url}}" ng-retina-with="@twoX">');
+        scope.image_url = 'image.png';
+        $httpBackend.when('HEAD', '/image@twoX.png').respond(200);
+        $compile(element)(scope);
+        scope.$digest();
+        $httpBackend.flush();
+      }));
+
+      it('should copy content from "ng-src" to "src" tag', function() {
+        expect(element.attr('src')).toBe('/image@twoX.png');
+      });
+
+      describe('should observe scope.image_url', function() {
+        beforeEach(function() {
+          $httpBackend.when('HEAD', '/newpicture@twoX.png').respond(200);
+          scope.image_url = 'newpicture.png';
+          scope.$digest();
+          $httpBackend.flush();
+        });
+
+        it('and replace src tag with another picture', function() {
+          expect(element.attr('src')).toBe('/newpicture@twoX.png');
+        });
+
+        // TODO: uncomment and solve the 'Error: No pending request to flush !'
+        //it('and check if the client side cache is working', function() {
+          //scope.image_url = 'image.png';
+          //scope.$digest();
+          //expect(element.attr('src')).toBe('/image@twoX.png');
+        //});
       });
     });
 
@@ -139,8 +185,23 @@ describe('test module angular-retina', function() {
       expect(element.attr('src')).toBe('/image.png');
     }));
 
+    it('should copy content from "ng-src" to "src" tag even with ng-retina-with', inject(function($compile) {
+      var element = angular.element('<input ng-src="/image.png" ng-retina-with="HD">');
+      $compile(element)(scope);
+      scope.$digest();
+      expect(element.attr('src')).toBe('/image.png');
+    }));
+
     it('should copy content from scope object to "src" tag', inject(function($compile) {
       var element = angular.element('<input ng-src="/{{image_url}}">');
+      scope.image_url = 'image.png';
+      $compile(element)(scope);
+      scope.$digest();
+      expect(element.attr('src')).toBe('/image.png');
+    }));
+
+    it('should copy content from scope object to "src" tag even with ng-retina-with', inject(function($compile) {
+      var element = angular.element('<input ng-src="/{{image_url}}" ng-retina-with="@ret">');
       scope.image_url = 'image.png';
       $compile(element)(scope);
       scope.$digest();
