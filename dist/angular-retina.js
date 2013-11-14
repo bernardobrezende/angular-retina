@@ -1,4 +1,4 @@
-/*! angular-retina - v0.2.3 - 2013-11-14
+/*! angular-retina - v0.2.4 - 2013-11-14
 * https://github.com/jrief/angular-retina
 * Copyright (c) 2013 Jacob Rief; Licensed MIT */
 (function (angular, undefined) {
@@ -46,16 +46,16 @@
         } else {
           replaceValue = forValue = attrs.ngSrc;
         }
-        var keepImageSize;
+        var resizeImage;
         if (element[0].hasAttribute('ng-retina-config')) {
           var configExpr = element[0].getAttribute('ng-retina-config').split(':');
-          keepImageSize = configExpr[1].trim() === 'true';
+          resizeImage = configExpr[1].trim() === 'true';
         } else {
-          keepImageSize = true;
+          resizeImage = false;
         }
         function setImgSrc(img_url) {
           attrs.$set('src', img_url);
-          if (keepImageSize) {
+          if (resizeImage) {
             attrs.$set('width', '50%');
           }
           if (msie)
