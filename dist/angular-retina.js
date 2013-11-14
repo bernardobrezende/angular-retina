@@ -1,4 +1,4 @@
-/*! angular-retina - v0.2.4 - 2013-11-14
+/*! angular-retina - v0.2.5 - 2013-11-14
 * https://github.com/jrief/angular-retina
 * Copyright (c) 2013 Jacob Rief; Licensed MIT */
 (function (angular, undefined) {
@@ -55,7 +55,7 @@
         }
         function setImgSrc(img_url) {
           attrs.$set('src', img_url);
-          if (resizeImage) {
+          if (isRetina && resizeImage) {
             attrs.$set('width', '50%');
           }
           if (msie)
