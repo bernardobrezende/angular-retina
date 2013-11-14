@@ -1,4 +1,4 @@
-/*! angular-retina - v0.2.0 - 2013-06-26
+/*! angular-retina - v0.2.1 - 2013-11-14
 * https://github.com/jrief/angular-retina
 * Copyright (c) 2013 Jacob Rief; Licensed MIT */
 (function (angular, undefined) {
@@ -26,14 +26,15 @@
             return true;
           return $window.matchMedia && $window.matchMedia(mediaQuery).matches;
         }();
-      function getHighResolutionURL(url) {
+      function getHighResolutionURL(url, suffix) {
         var parts = url.split('.');
         if (parts.length < 2)
           return url;
-        parts[parts.length - 2] += '@2x';
+        parts[parts.length - 2] += suffix;
         return parts.join('.');
       }
       return function (scope, element, attrs) {
+        var suffixAttr = element[0].hasAttribute('ng-retina-with') ? element[0].getAttribute('ng-retina-with') : '@2x';
         function setImgSrc(img_url) {
           attrs.$set('src', img_url);
           if (msie)
@@ -42,7 +43,7 @@
         function set2xVariant(img_url) {
           var img_url_2x = $window.sessionStorage.getItem(img_url);
           if (!img_url_2x) {
-            img_url_2x = getHighResolutionURL(img_url);
+            img_url_2x = getHighResolutionURL(img_url, suffixAttr);
             $http.head(img_url_2x).success(function (data, status) {
               setImgSrc(img_url_2x);
               $window.sessionStorage.setItem(img_url, img_url_2x);
