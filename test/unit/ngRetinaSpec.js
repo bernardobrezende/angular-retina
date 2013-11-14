@@ -38,19 +38,15 @@ describe('test module angular-retina', function() {
     describe('for static "ng-src" tags', function() {
       it('should set src tag with a highres image', inject(function($compile) {
         var element = angular.element('<input ng-src="/image.png">');
-        $httpBackend.when('HEAD', '/image@2x.png').respond(200);
         $compile(element)(scope);
         scope.$digest();
-        $httpBackend.flush();
         expect(element.attr('src')).toBe('/image@2x.png');
       }));
 
-      it('should set src tag with a highres image with custom ng-retina-with', inject(function($compile) {
-        var element = angular.element('<input ng-src="/image.png" ng-retina-with="HD">');
-        $httpBackend.when('HEAD', '/imageHD.png').respond(200);
+      it('should set src tag with a highres image with custom ng-retina-replace', inject(function($compile) {
+        var element = angular.element('<input ng-src="/image.png" ng-retina-replace=".png for HD.png">');
         $compile(element)(scope);
         scope.$digest();
-        $httpBackend.flush();
         expect(element.attr('src')).toBe('/imageHD.png');
       }));
     });
@@ -61,10 +57,8 @@ describe('test module angular-retina', function() {
       beforeEach(inject(function($compile) {
         element = angular.element('<input ng-src="/{{image_url}}">');
         scope.image_url = 'image.png';
-        $httpBackend.when('HEAD', '/image@2x.png').respond(200);
         $compile(element)(scope);
         scope.$digest();
-        $httpBackend.flush();
       }));
 
       it('should copy content from "ng-src" to "src" tag', function() {
@@ -73,10 +67,8 @@ describe('test module angular-retina', function() {
 
       describe('should observe scope.image_url', function() {
         beforeEach(function() {
-          $httpBackend.when('HEAD', '/picture@2x.png').respond(200);
           scope.image_url = 'picture.png';
           scope.$digest();
-          $httpBackend.flush();
         });
 
         it('and replace src tag with another picture', function() {
@@ -91,16 +83,14 @@ describe('test module angular-retina', function() {
       });
     });
 
-    describe('for marked up "ng-src" and "ng-retina-with" tags', function() {
+    describe('for marked up "ng-src" and "ng-retina-replace" tags', function() {
       var element;
 
       beforeEach(inject(function($compile) {
-        element = angular.element('<input ng-src="/{{image_url}}" ng-retina-with="@twoX">');
+        element = angular.element('<input ng-src="/{{image_url}}" ng-retina-replace=".png for @twoX.png">');
         scope.image_url = 'image.png';
-        $httpBackend.when('HEAD', '/image@twoX.png').respond(200);
         $compile(element)(scope);
         scope.$digest();
-        $httpBackend.flush();
       }));
 
       it('should copy content from "ng-src" to "src" tag', function() {
@@ -109,10 +99,8 @@ describe('test module angular-retina', function() {
 
       describe('should observe scope.image_url', function() {
         beforeEach(function() {
-          $httpBackend.when('HEAD', '/newpicture@twoX.png').respond(200);
           scope.image_url = 'newpicture.png';
           scope.$digest();
-          $httpBackend.flush();
         });
 
         it('and replace src tag with another picture', function() {
@@ -128,28 +116,23 @@ describe('test module angular-retina', function() {
       });
     });
 
-    describe('if the high resolution image is not available', function() {
-      beforeEach(function() {
-        $httpBackend.when('HEAD', '/image@2x.png').respond(404);
-      });
+    //describe('if the high resolution image is not available', function() {
 
-      it('should copy content from "ng-src" to "src" tag', inject(function($compile) {
-        var element = angular.element('<input ng-src="/image.png">');
-        $compile(element)(scope);
-        scope.$digest();
-        $httpBackend.flush();
-        expect(element.attr('src')).toBe('/image.png');
-      }));
+      //it('should copy content from "ng-src" to "src" tag', inject(function($compile) {
+        //var element = angular.element('<input ng-src="/image.png">');
+        //$compile(element)(scope);
+        //scope.$digest();
+        //expect(element.attr('src')).toBe('/image.png');
+      //}));
 
-      it('should copy content from scope object to "src" tag', inject(function($compile) {
-        var element = angular.element('<input ng-src="/{{image_url}}">');
-        scope.image_url = 'image.png';
-        $compile(element)(scope);
-        scope.$digest();
-        $httpBackend.flush();
-        expect(element.attr('src')).toBe('/image.png');
-      }));
-    });
+      //it('should copy content from scope object to "src" tag', inject(function($compile) {
+        //var element = angular.element('<input ng-src="/{{image_url}}">');
+        //scope.image_url = 'image.png';
+        //$compile(element)(scope);
+        //scope.$digest();
+        //expect(element.attr('src')).toBe('/image.png');
+      //}));
+    //});
   });
 
   describe('on standard resolution displays using images in their low resolution version', function() {
@@ -185,8 +168,8 @@ describe('test module angular-retina', function() {
       expect(element.attr('src')).toBe('/image.png');
     }));
 
-    it('should copy content from "ng-src" to "src" tag even with ng-retina-with', inject(function($compile) {
-      var element = angular.element('<input ng-src="/image.png" ng-retina-with="HD">');
+    it('should copy content from "ng-src" to "src" tag even with ng-retina-replace', inject(function($compile) {
+      var element = angular.element('<input ng-src="/image.png" ng-retina-replace=".png for HD.png">');
       $compile(element)(scope);
       scope.$digest();
       expect(element.attr('src')).toBe('/image.png');
@@ -200,8 +183,8 @@ describe('test module angular-retina', function() {
       expect(element.attr('src')).toBe('/image.png');
     }));
 
-    it('should copy content from scope object to "src" tag even with ng-retina-with', inject(function($compile) {
-      var element = angular.element('<input ng-src="/{{image_url}}" ng-retina-with="@ret">');
+    it('should copy content from scope object to "src" tag even with ng-retina-replace', inject(function($compile) {
+      var element = angular.element('<input ng-src="/{{image_url}}" ng-retina-replace=".png for @ret.png">');
       scope.image_url = 'image.png';
       $compile(element)(scope);
       scope.$digest();
