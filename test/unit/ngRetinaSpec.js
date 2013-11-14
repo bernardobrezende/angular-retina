@@ -37,7 +37,7 @@ describe('test module angular-retina', function() {
 
     describe('for static "ng-src" tags', function() {
       it('should set src tag with a highres image', inject(function($compile) {
-        var element = angular.element('<input ng-src="/image.png">');
+        var element = angular.element('<input ng-src="/image.png" ng-retina-replace=".png for @2x.png">');
         $compile(element)(scope);
         scope.$digest();
         expect(element.attr('src')).toBe('/image@2x.png');
@@ -55,7 +55,7 @@ describe('test module angular-retina', function() {
       var element;
 
       beforeEach(inject(function($compile) {
-        element = angular.element('<input ng-src="/{{image_url}}">');
+        element = angular.element('<input ng-src="/{{image_url}}" ng-retina-replace=".png for @2x.png">');
         scope.image_url = 'image.png';
         $compile(element)(scope);
         scope.$digest();
